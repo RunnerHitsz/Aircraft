@@ -1,0 +1,54 @@
+@startuml
+interface EnemyFactory {
+    + createEnemy(): AbstractAircraft
+}
+
+class MobEnemyFactory {
+    + createEnemy(): AbstractAircraft
+}
+
+class ShootingEnemyFactory {
+    + createEnemy(): AbstractAircraft
+}
+
+class QuickEnemyFactory {
+    + createEnemy(): AbstractAircraft
+}
+
+class BossEnemyFactory {
+    + createEnemy(): AbstractAircraft
+}
+
+class RandomEnemyFactory {
+    + getRandomFactory(): EnemyFactory
+    + getFactory(EnemyType): EnemyFactory
+}
+
+enum EnemyType {
+    MOB
+    SHOOTING
+    QUICK
+    BOSS
+}
+
+class Game {
+    - enemyAircrafts: List
+    + action(): void
+}
+
+EnemyFactory <|.. MobEnemyFactory
+EnemyFactory <|.. ShootingEnemyFactory
+EnemyFactory <|.. QuickEnemyFactory
+EnemyFactory <|.. BossEnemyFactory
+
+RandomEnemyFactory --> EnemyFactory : returns
+RandomEnemyFactory --> EnemyType : uses
+
+Game --> RandomEnemyFactory : uses
+Game --> EnemyFactory : uses
+
+MobEnemyFactory ..> MobEnemy : creates
+ShootingEnemyFactory ..> ShootingEnemy : creates
+QuickEnemyFactory ..> QuickEnemy : creates
+BossEnemyFactory ..> BossEnemy : creates
+@enduml

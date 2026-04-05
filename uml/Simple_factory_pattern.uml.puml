@@ -1,0 +1,44 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class Simple_PropFactory {
+    + createProp(String type):prop
+}
+
+interface prop {
+    + effect(HeroAircraft hero):void
+}
+
+enum PropType {
+    Blood_prop
+    Fire_prop
+    SuperFire-prop
+    Bomb_prop
+    Ice_prop
+}
+
+class Blood_prop{
+}
+
+class Fire_prop{
+}
+
+class SuperFire_prop{
+}
+
+class Bomb_prop{
+}
+
+class Ice_prop{
+}
+
+PropType . Simple_PropFactory
+Simple_PropFactory .> prop
+Blood_prop ..|> prop
+Fire_prop ..|> prop
+SuperFire_prop ..|> prop
+Bomb_prop ..|> prop
+Ice_prop ..|> prop
+
+
+@enduml
