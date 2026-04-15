@@ -1,5 +1,7 @@
 package edu.hitsz.aircraft;
 
+import edu.hitsz.aircraft.strategypattern.Strategy;
+import edu.hitsz.aircraft.strategypattern.Shoot_Context;
 import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.basic.AbstractFlyingObject;
 import edu.hitsz.prop.AbstractProp;
@@ -21,11 +23,51 @@ public abstract class AbstractAircraft extends AbstractFlyingObject {
     protected int ShootCounter = 0;
     protected int ShootCycle = 30;
 
+    //策略模式
+    protected Shoot_Context shoot_context;
+
+    // 射击参数
+    protected int shootNum = 1;
+    protected int power = 30;
+    protected int direction = -1;  // -1向上，1向下
 
     public AbstractAircraft(int locationX, int locationY, int speedX, int speedY, int hp) {
         super(locationX, locationY, speedX, speedY);
         this.hp = hp;
         this.maxHp = hp;
+    }
+
+    /**
+     * 设置射击策略
+     */
+    public void setShootStrategy(Strategy strategy) {
+        if (shoot_context == null) {
+            shoot_context = new Shoot_Context(strategy);
+        } else {
+            shoot_context.setStrategy(strategy);
+        }
+    }
+
+    public Strategy getShootStrategy() {
+        if (shoot_context == null) {
+            return null;
+        }
+        return shoot_context.getStrategy();
+    }
+
+    /**
+     * 执行射击（使用上下文）
+     */
+    public List<BaseBullet> shoot() {
+        if (shoot_context == null) {
+            return new LinkedList<>();
+        }
+
+        return shoot_context.executeStrategy(
+                getLocationX(), getLocationY(),
+                getSpeedX(), getSpeedY(),
+                direction, shootNum, power
+        );
     }
 
     /**
@@ -40,19 +82,6 @@ public abstract class AbstractAircraft extends AbstractFlyingObject {
         return false;
     }
 
-    /**
-     * 设置射击周期
-     */
-    public void setShootCycle(int cycle) {
-        this.ShootCycle = cycle;
-    }
-
-    /**
-     * 获取射击周期
-     */
-    public int getShootCycle() {
-        return ShootCycle;
-    }
 
     public void decreaseHp(int decrease){
         hp -= decrease;
@@ -69,18 +98,21 @@ public abstract class AbstractAircraft extends AbstractFlyingObject {
         }
     }
 
+
+
+    // Getter/Setter
+    public int getShootNum() { return shootNum; }
+    public void setShootNum(int shootNum) { this.shootNum = shootNum; }
+    public int getPower() { return power; }
+    public void setPower(int power) { this.power = power; }
+    public int getDirection() { return direction; }
+    public void setDirection(int direction) { this.direction = direction; }
     public int getHp() {
         return hp;
     }
-
-
-    /**
-     * 飞机射击方法
-     * @return
-     *  可射击对象需实现，返回子弹列表
-     *  非可射击对象空实现，返回空列表
-     */
-    public abstract List<BaseBullet> shoot();
+    public void setMaxHp(int MaxHp){ this.maxHp = MaxHp; this.hp = maxHp; }
+    public int getShootCycle() { return ShootCycle; }
+    public void setShootCycle(int cycle) { this.ShootCycle = cycle; }
 
     /**
      * 敌机死亡时掉落道具（默认实现，不掉落）

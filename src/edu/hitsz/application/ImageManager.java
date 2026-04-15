@@ -39,15 +39,16 @@ public class ImageManager {
     public static BufferedImage ENEMY_BULLET_IMAGE;
     public static BufferedImage MOB_ENEMY_IMAGE;
     public static BufferedImage SHOOTING_ENEMY_IMAGE;
-    public static BufferedImage Quick_ENEMY_IMAGE;
-    public static BufferedImage Boss_ENEMY_IMAGE;
+    public static BufferedImage QUICK_ENEMY_IMAGE;
+    public static BufferedImage TRACKING_ENEMY_IMAGE;
+    public static BufferedImage BOSS_ENEMY_IMAGE;
 
     // 道具图片
     public static BufferedImage BLOOD_PROP_IMAGE;    // 血量道具图片
     public static BufferedImage FIRE_PROP_IMAGE;    // 火力道具图片
-    public static BufferedImage SUPERFIRE_PROP_IMAGE;    // 火力道具图片
-    public static BufferedImage BOMB_PROP_IMAGE;    // 火力道具图片
-    public static BufferedImage ICE_PROP_IMAGE;    // 火力道具图片
+    public static BufferedImage SUPERFIRE_PROP_IMAGE;    // 超级火力道具图片
+    public static BufferedImage BOMB_PROP_IMAGE;    // 炸弹道具图片
+    public static BufferedImage ICE_PROP_IMAGE;    // 冰冻道具图片
 
     static {
         try {
@@ -62,8 +63,9 @@ public class ImageManager {
             MOB_ENEMY_IMAGE = ImageIO.read(new FileInputStream("src/images/mob.png"));
             SHOOTING_ENEMY_IMAGE = ImageIO.read(new FileInputStream("src/images/elite.png"));
             //SHOOTING_ENEMY_IMAGE = ImageIO.read(new FileInputStream("src/images/kunkun.png"));
-            Quick_ENEMY_IMAGE = ImageIO.read(new FileInputStream("src/images/elitePlus.png"));
-            Boss_ENEMY_IMAGE = ImageIO.read(new FileInputStream("src/images/boss.png"));
+            QUICK_ENEMY_IMAGE = ImageIO.read(new FileInputStream("src/images/elitePlus.png"));
+            TRACKING_ENEMY_IMAGE = ImageIO.read(new FileInputStream("src/images/elitePro.png"));
+            BOSS_ENEMY_IMAGE = ImageIO.read(new FileInputStream("src/images/boss.png"));
 
             HERO_BULLET_IMAGE = ImageIO.read(new FileInputStream("src/images/bullet_hero.png"));
             ENEMY_BULLET_IMAGE = ImageIO.read(new FileInputStream("src/images/bullet_enemy.png"));
@@ -78,8 +80,9 @@ public class ImageManager {
             CLASSNAME_IMAGE_MAP.put(HeroAircraft.class.getName(), HERO_IMAGE);
             CLASSNAME_IMAGE_MAP.put(MobEnemy.class.getName(), MOB_ENEMY_IMAGE);
             CLASSNAME_IMAGE_MAP.put(ShootingEnemy.class.getName(), SHOOTING_ENEMY_IMAGE);
-            CLASSNAME_IMAGE_MAP.put(QuickEnemy.class.getName(), Quick_ENEMY_IMAGE);
-            CLASSNAME_IMAGE_MAP.put(BossEnemy.class.getName(), Boss_ENEMY_IMAGE);
+            CLASSNAME_IMAGE_MAP.put(QuickEnemy.class.getName(), QUICK_ENEMY_IMAGE);
+            CLASSNAME_IMAGE_MAP.put(TrackingEnemy.class.getName(), TRACKING_ENEMY_IMAGE);
+            CLASSNAME_IMAGE_MAP.put(BossEnemy.class.getName(), BOSS_ENEMY_IMAGE);
 
             CLASSNAME_IMAGE_MAP.put(HeroBullet.class.getName(), HERO_BULLET_IMAGE);
             CLASSNAME_IMAGE_MAP.put(EnemyBullet.class.getName(), ENEMY_BULLET_IMAGE);

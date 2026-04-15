@@ -9,7 +9,7 @@ import edu.hitsz.aircraft.HeroAircraft;
  * 道具基类
  * @author chen
  */
-public abstract class AbstractProp extends  AbstractFlyingObject{
+public abstract class AbstractProp extends  AbstractFlyingObject {
     public AbstractProp(int locationX, int locationY, int speedX, int speedY) {
         super(locationX, locationY, speedX, speedY);
     }

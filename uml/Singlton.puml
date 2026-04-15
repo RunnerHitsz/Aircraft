@@ -1,0 +1,14 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class HeroAircraft {
+    - static volatile HeroAircraft heroAircraft
+
+    - HeroAircraft(int locationX, int locationY, int speedX, int speedY, int hp)
+    + static HeroAircraft getHeroAircraft(): HeroAircraft
+}
+
+class Client
+
+Client --> HeroAircraft
+@enduml

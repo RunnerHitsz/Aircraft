@@ -5,6 +5,7 @@ import edu.hitsz.aircraft.factory.EnemyFactory;
 import edu.hitsz.aircraft.factory.RandomEnemyFactory;
 import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.basic.AbstractFlyingObject;
+import edu.hitsz.manager.BossManager;
 import edu.hitsz.prop.AbstractProp;
 
 import javax.swing.*;
@@ -28,8 +29,8 @@ public class Game extends JPanel {
     //时间间隔(ms)，控制刷新频率
     private final int timeInterval = 30;
 
-    //简单工程创建敌机
-    SimpleFactory simpleFactory;
+    //Boss管理器
+    private BossManager bossManager;
 
     private final HeroAircraft heroAircraft;
     private final List<AbstractAircraft> enemyAircrafts;
@@ -46,8 +47,6 @@ public class Game extends JPanel {
     protected double enemySpawnCycle  =  20;
     private int enemySpawnCounter = 0;
 
-    //英雄机和敌机射击周期计数
-    private int hero_shootCounter = 0;
 
     //当前玩家分数
     private int score = 0;
@@ -63,6 +62,10 @@ public class Game extends JPanel {
         enemyBullets = new LinkedList<>();
 
         props = new LinkedList<>();
+
+        // 初始化Boss管理器
+        bossManager = BossManager.getInstance();
+        bossManager.init(enemyAircrafts);
 
         //启动英雄机鼠标监听
         new HeroController(this, heroAircraft);
@@ -81,11 +84,16 @@ public class Game extends JPanel {
             @Override
             public void run() {
 
+                // 更新Boss管理器（传入当前分数）
+                bossManager.updateScore(score);
+
                 enemySpawnCounter++;
                 if (enemySpawnCounter >=enemySpawnCycle) {
                     enemySpawnCounter = 0;
 
-                    if (enemyAircrafts.size() < enemyMaxNumber) {
+                    int maxEnemy = bossManager.isBossExist() ? 3 : enemyMaxNumber;
+
+                    if (enemyAircrafts.size() < maxEnemy) {
                         //使用工厂方法模式：先获取随机工厂，再创建敌机
                         EnemyFactory factory = RandomEnemyFactory.getRandomFactory();
                         AbstractAircraft newEnemy = factory.createEnemy();
@@ -194,13 +202,18 @@ public class Game extends JPanel {
                       //判断敌机是否死亡
                     if (enemyAircraft.notValid()) {
                         // 根据敌机类型获得不同分数
+                        if (enemyAircraft instanceof BossEnemy) {
+                            bossManager.onBossDeath();  // Boss死亡通知
+                        }
                         if (enemyAircraft instanceof MobEnemy) {
                             score += 10;
                         } else if (enemyAircraft instanceof ShootingEnemy) {
                             score += 20;
                         } else if (enemyAircraft instanceof QuickEnemy) {
                             score += 10;
-                        } else if (enemyAircraft instanceof BossEnemy) {
+                        } else if (enemyAircraft instanceof TrackingEnemy) {
+                            score += 20;
+                        }else if (enemyAircraft instanceof BossEnemy) {
                             score += 100;
                         }
 

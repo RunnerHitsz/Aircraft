@@ -1,0 +1,44 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+interface Strategy
+{
+    + shoot():List<BaseBullet>
+}
+
+class DirectShootStrategy
+{
+    + shoot():List<BaseBullet>
+}
+
+class ScatterShootStrategy
+{
+    + shoot():List<BaseBullet>
+}
+
+class CircleShootStrategy
+{
+    + shoot():List<BaseBullet>
+}
+
+DirectShootStrategy ..|>  Strategy
+ScatterShootStrategy  ..|>  Strategy
+CircleShootStrategy  ..|>  Strategy
+
+class shootor
+{
+    - strategy:Strategy
+    + shootor(Strategy strategy)
+    + setStrategy(Strategy strategy)
+    + executeStrategy():List<BaseBullet>
+}
+
+shootor o--> Strategy
+
+class StrategyPatternDemo
+{
+}
+
+StrategyPatternDemo ..> shootor
+
+@enduml

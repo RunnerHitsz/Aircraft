@@ -10,12 +10,12 @@ import edu.hitsz.aircraft.AbstractAircraft;
 public class RandomEnemyFactory {
 
     // 各类型敌机的概率权重
-    private static final int MOB_WEIGHT = 60;      // 普通敌机 60%
-    private static final int SHOOTING_WEIGHT = 25; // 射击敌机 25%
-    private static final int QUICK_WEIGHT = 12;    // 快速敌机 12%
-    private static final int BOSS_WEIGHT = 3;      // Boss敌机 3%
+    private static final int MOB_WEIGHT = 50;      // 普通敌机 50%
+    private static final int SHOOTING_WEIGHT = 18; // 射击敌机 18%
+    private static final int QUICK_WEIGHT = 18;    // 快速敌机 18%
+    private static final int TRACKING_WEIGHT = 10; // 追踪敌机 10%
 
-    private static final int TOTAL_WEIGHT = MOB_WEIGHT + SHOOTING_WEIGHT + QUICK_WEIGHT + BOSS_WEIGHT;
+    private static final int TOTAL_WEIGHT = MOB_WEIGHT + SHOOTING_WEIGHT + QUICK_WEIGHT  + TRACKING_WEIGHT ;
 
     /**
      * 随机获取一个敌机工厂
@@ -30,8 +30,8 @@ public class RandomEnemyFactory {
             return new ShootingEnemyFactory();
         } else if (rand < MOB_WEIGHT + SHOOTING_WEIGHT + QUICK_WEIGHT) {
             return new QuickEnemyFactory();
-        } else {
-            return new BossEnemyFactory();
+        } else{
+            return new TrackingEnemyFactory();
         }
     }
 
@@ -48,6 +48,8 @@ public class RandomEnemyFactory {
                 return new ShootingEnemyFactory();
             case QUICK:
                 return new QuickEnemyFactory();
+            case TRACKING:
+                return new TrackingEnemyFactory();
             case BOSS:
                 return new BossEnemyFactory();
             default:

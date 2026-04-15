@@ -19,7 +19,7 @@ public class QuickEnemyFactory implements EnemyFactory {
         }
 
         return new QuickEnemy(
-                (int) (Math.random() * (Main.WINDOW_WIDTH - ImageManager.Quick_ENEMY_IMAGE.getWidth())),
+                (int) (Math.random() * (Main.WINDOW_WIDTH - ImageManager.QUICK_ENEMY_IMAGE.getWidth())),
                 (int) (Math.random() * Main.WINDOW_HEIGHT * 0.05),
                 speedX,
                 10,  // 速度较块
