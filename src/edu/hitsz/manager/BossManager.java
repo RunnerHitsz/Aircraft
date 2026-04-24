@@ -2,7 +2,7 @@ package edu.hitsz.manager;
 
 import edu.hitsz.aircraft.AbstractAircraft;
 import edu.hitsz.aircraft.BossEnemy;
-import edu.hitsz.aircraft.factory.BossEnemyFactory;
+import edu.hitsz.factory.BossEnemyFactory;
 
 import java.util.List;
 

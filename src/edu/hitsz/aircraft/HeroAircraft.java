@@ -1,6 +1,6 @@
 package edu.hitsz.aircraft;
 
-import edu.hitsz.aircraft.strategypattern.DirectShootStrategy;
+import edu.hitsz.strategypattern.DirectShootStrategy;
 import edu.hitsz.application.ImageManager;
 import edu.hitsz.application.Main;
 import edu.hitsz.bullet.BaseBullet;

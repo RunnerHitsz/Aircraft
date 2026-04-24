@@ -1,7 +1,7 @@
 // TrackingEnemy.java
 package edu.hitsz.aircraft;
 
-import edu.hitsz.aircraft.strategypattern.TrackingShootStrategy;
+import edu.hitsz.strategypattern.TrackingShootStrategy;
 import edu.hitsz.application.Main;
 import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.prop.AbstractProp;

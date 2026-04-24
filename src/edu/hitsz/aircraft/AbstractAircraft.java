@@ -1,7 +1,7 @@
 package edu.hitsz.aircraft;
 
-import edu.hitsz.aircraft.strategypattern.Strategy;
-import edu.hitsz.aircraft.strategypattern.Shoot_Context;
+import edu.hitsz.strategypattern.Strategy;
+import edu.hitsz.strategypattern.Shoot_Context;
 import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.basic.AbstractFlyingObject;
 import edu.hitsz.prop.AbstractProp;

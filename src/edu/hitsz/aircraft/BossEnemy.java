@@ -1,7 +1,8 @@
 package edu.hitsz.aircraft;
 
-import edu.hitsz.aircraft.strategypattern.DirectShootStrategy;
-import edu.hitsz.aircraft.strategypattern.ScatterShootStrategy;
+import edu.hitsz.strategypattern.CircleShootStrategy;
+import edu.hitsz.strategypattern.DirectShootStrategy;
+import edu.hitsz.strategypattern.ScatterShootStrategy;
 import edu.hitsz.application.Main;
 import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.bullet.EnemyBullet;
@@ -32,8 +33,8 @@ public class BossEnemy extends AbstractAircraft{
         this.power = 10;
         this.direction = 1;
 
-        // 初始使用扇形射击
-        setShootStrategy(new ScatterShootStrategy(false, 150));
+        // 初始使用环形射击
+        setShootStrategy(new CircleShootStrategy(false, this.shootNum, 6));
     }
 
     @Override

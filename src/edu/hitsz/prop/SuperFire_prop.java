@@ -3,9 +3,9 @@ package edu.hitsz.prop;
 
 import edu.hitsz.aircraft.AbstractAircraft;
 import edu.hitsz.aircraft.HeroAircraft;
-import edu.hitsz.aircraft.strategypattern.CircleShootStrategy;
-import edu.hitsz.aircraft.strategypattern.DirectShootStrategy;
-import edu.hitsz.aircraft.strategypattern.Strategy;
+import edu.hitsz.strategypattern.CircleShootStrategy;
+import edu.hitsz.strategypattern.DirectShootStrategy;
+import edu.hitsz.strategypattern.Strategy;
 import edu.hitsz.application.ImageManager;
 
 import java.awt.image.BufferedImage;

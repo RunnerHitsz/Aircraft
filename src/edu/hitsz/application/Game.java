@@ -1,8 +1,11 @@
 package edu.hitsz.application;
 
+import edu.hitsz.DAO.ScoreDao;
+import edu.hitsz.DAO.ScoreDaoImpl;
+import edu.hitsz.DAO.ScoreRecord;
 import edu.hitsz.aircraft.*;
-import edu.hitsz.aircraft.factory.EnemyFactory;
-import edu.hitsz.aircraft.factory.RandomEnemyFactory;
+import edu.hitsz.factory.EnemyFactory;
+import edu.hitsz.factory.RandomEnemyFactory;
 import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.basic.AbstractFlyingObject;
 import edu.hitsz.manager.BossManager;
@@ -11,6 +14,7 @@ import edu.hitsz.prop.AbstractProp;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 import java.util.Timer;
@@ -21,6 +25,11 @@ import java.util.concurrent.*;
  * @author hitsz
  */
 public class Game extends JPanel {
+
+    //玩家名字
+    private String playerName;
+    //游戏难度
+    private Difficulty difficulty;
 
     private int backGroundTop = 0;
 
@@ -41,21 +50,45 @@ public class Game extends JPanel {
     private final List<AbstractProp> props;
 
     //屏幕中出现的敌机最大数量
-    private final int enemyMaxNumber = 5;
+    private int enemyMaxNumber = 5;
 
     //敌机生成周期
     protected double enemySpawnCycle  =  20;
     private int enemySpawnCounter = 0;
 
 
-    //当前玩家分数
+    //当前玩家分数,击杀数，游戏开始时间
     private int score = 0;
+    private int killCount = 0;
+    private long startTime;
+
+    // 新增DAO 对象
+    private ScoreDao scoreDao;
 
     //游戏结束标志
     private boolean gameOverFlag = false;
 
-    public Game() {
+    public Game(String playerName, Difficulty difficulty) {
+
+        this.difficulty = difficulty;
+
+        if (playerName == null || playerName.trim().isEmpty()) {
+            this.playerName = "玩家";
+        } else {
+            this.playerName = playerName;
+        }
+
         heroAircraft = HeroAircraft.getHeroAircraft();
+
+        // 根据难度设置参数
+        applyDifficultySettings();
+
+        // 根据难度初始化 DAO
+        scoreDao = new ScoreDaoImpl(difficulty.getName());
+
+        // 记录开始时间
+        startTime = System.currentTimeMillis();
+
 
         enemyAircrafts = new LinkedList<>();
         heroBullets = new LinkedList<>();
@@ -72,6 +105,27 @@ public class Game extends JPanel {
 
         this.timer = new Timer("game-action-timer", true);
 
+    }
+
+    // 根据难度设置游戏参数
+    private void applyDifficultySettings() {
+        switch (difficulty) {
+            case EASY:
+                enemyMaxNumber = 3;
+                enemySpawnCycle = 30;
+                heroAircraft.setMaxHp(200);
+                break;
+            case NORMAL:
+                enemyMaxNumber = 5;
+                enemySpawnCycle = 20;
+                heroAircraft.setMaxHp(100);
+                break;
+            case HARD:
+                enemyMaxNumber = 7;
+                enemySpawnCycle = 15;
+                heroAircraft.setMaxHp(80);
+                break;
+        }
     }
 
     /**
@@ -207,14 +261,19 @@ public class Game extends JPanel {
                         }
                         if (enemyAircraft instanceof MobEnemy) {
                             score += 10;
+                            killCount++;
                         } else if (enemyAircraft instanceof ShootingEnemy) {
                             score += 20;
+                            killCount++;
                         } else if (enemyAircraft instanceof QuickEnemy) {
                             score += 10;
+                            killCount++;
                         } else if (enemyAircraft instanceof TrackingEnemy) {
                             score += 20;
+                            killCount++;
                         }else if (enemyAircraft instanceof BossEnemy) {
                             score += 100;
+                            killCount++;
                         }
 
                         //只在死亡时调用 dropProp
@@ -265,9 +324,65 @@ public class Game extends JPanel {
         if (heroAircraft.getHp() <= 0) {
             timer.cancel(); // 取消定时器并终止所有调度任务
             gameOverFlag = true;
+
+            // 保存游戏记录
+            saveGameRecord();
+
             System.out.println("Game Over!");
         }
     };
+
+    // 新增：保存游戏记录
+    private void saveGameRecord() {
+
+        if (playerName == null || playerName.trim().isEmpty()) {
+            playerName = "玩家";
+        }
+
+        // 获取当前时间
+        String gameDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+
+        // 计算存活时间（秒）
+        long survivalTime = (System.currentTimeMillis() - startTime) / 1000;
+
+        // 创建得分记录
+        ScoreRecord record = new ScoreRecord(playerName, score, gameDate, killCount, survivalTime);
+
+        // 保存到 DAO
+        scoreDao.doAdd(record);
+    }
+
+    // 新增：获取存活时间
+    private long getSurvivalTime() {
+        return (System.currentTimeMillis() - startTime) / 1000;
+    }
+
+    // 新增：显示排行榜
+    public void showRanking() {
+        System.out.println("\n========== 得分排行榜 ==========");
+        List<ScoreRecord> topScores = scoreDao.getTopN(10);
+        for (int i = 0; i < topScores.size(); i++) {
+            ScoreRecord record = topScores.get(i);
+            System.out.println((i + 1) + ". " + record.getPlayerName() +
+                    " - " + record.getScore() + "分" +
+                    " (" + record.getGameDate() + ")");
+        }
+        System.out.println("================================\n");
+    }
+
+    // 新增：显示玩家历史记录
+    public void showPlayerHistory() {
+        System.out.println("\n========== " + playerName + " 的历史记录 ==========");
+        List<ScoreRecord> history = scoreDao.findByPlayer(playerName);
+        for (int i = 0; i < history.size(); i++) {
+            ScoreRecord record = history.get(i);
+            System.out.println((i + 1) + ". 得分: " + record.getScore() +
+                    ", 击落: " + record.getKillCount() +
+                    ", 存活: " + record.getSurvivalTime() + "秒" +
+                    ", 时间: " + record.getGameDate());
+        }
+        System.out.println("==========================================\n");
+    }
 
     //***********************
     //      Paint 各部分
@@ -347,7 +462,9 @@ public class Game extends JPanel {
         g.setColor(Color.RED);
         g.setFont(new Font("SansSerif", Font.BOLD, 22));
         g.drawString("SCORE: " + this.score, x, y);
-        y = y + 20;
+        y = y + 25;
+        g.drawString("KILL: " + this.killCount, x, y);
+        y = y + 25;
         g.drawString("LIFE: " + this.heroAircraft.getHp(), x, y);
     }
 
