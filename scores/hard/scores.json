@@ -1,0 +1,23 @@
+[
+  {
+    "playerName": "Runge",
+    "score": 70,
+    "gameDate": "2026-04-22 12:07:58",
+    "killCount": 5,
+    "survivalTime": 5
+  },
+  {
+    "playerName": "Runge",
+    "score": 510,
+    "gameDate": "2026-04-22 12:10:21",
+    "killCount": 32,
+    "survivalTime": 30
+  },
+  {
+    "playerName": "Runge",
+    "score": 280,
+    "gameDate": "2026-04-22 12:15:01",
+    "killCount": 23,
+    "survivalTime": 18
+  }
+]

@@ -1,0 +1,46 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+interface ScoreDao {
+    + doAdd(ScoreRecord record): void
+    + doDelete(ScoreRecord record): void
+    + doDeleteByPlayer(String playerName):void
+    + findByPlayer(String name): List<ScoreRecord>
+    + getTopN(int n): List<ScoreRecord>
+    + getAll(): List<ScoreRecord>
+}
+
+class ScoreDaoImpl {
+    - scorerecords:List<ScoreRecord>
+    + ScoreDaoImpl()
+    + doAdd(ScoreRecord record): void
+    + doDelete(ScoreRecord record): void
+    + doDeleteByPlayer(String playerName):void
+    + findByPlayer(String name): List<ScoreRecord>
+    + getTopN(int n): List<ScoreRecord>
+    + getAll(): List<ScoreRecord>
+}
+
+class ScoreRecord {
+    - playerName: String
+    - score: int
+    - gameDate: string
+    - killCount: int
+    - survivalTime: long
+    + ScoreRecord(String playerName,int score)
+    + getPlayerName():String
+    + setPlayerName():String
+    + getScore():int
+    + setScore():int
+    + getGameDate():string
+    + setGameDate():string
+    + getKillCount():int
+    + setKillCount():int
+    + getSurvivalTime():long
+    + setSurvivalTime():long
+}
+
+ScoreDaoImpl ..|> ScoreDao
+ScoreDaoImpl --> ScoreRecord
+
+@enduml
