@@ -1,0 +1,42 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+interface Observer {
+    + onBomb(): void
+    + onIce(): void
+}
+
+class Enemy {
+    + onBomb(): void
+    + onIce(): void
+}
+
+class EnemyBullet {
+    + onBomb(): void
+    + onIce(): void
+}
+
+abstract class PropSubject {
+    - observers: List<Observer>
+    + attach(Observer): void
+    + detach(Observer): void
+    + notifyBomb(): void
+    + notifyIce(): void
+}
+
+class BombProp {
+    + effect(): void
+}
+
+class IceProp {
+    + effect(): void
+}
+
+Observer <|.. Enemy
+Observer <|.. EnemyBullet
+PropSubject <|-- BombProp
+PropSubject <|-- IceProp
+PropSubject --> Observer
+
+
+@enduml

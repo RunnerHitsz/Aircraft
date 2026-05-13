@@ -1,5 +1,6 @@
 package edu.hitsz.aircraft;
 
+import edu.hitsz.observer.PropObserver;
 import edu.hitsz.strategypattern.DirectShootStrategy;
 import edu.hitsz.application.Main;
 import edu.hitsz.bullet.BaseBullet;
@@ -16,10 +17,13 @@ import java.util.List;
  * 可射击、会掉落道具
  * @author chen
  */
-public class QuickEnemy extends AbstractAircraft {
+public class QuickEnemy extends AbstractAircraft implements PropObserver {
 
     // 道具掉落概率（0-1之间）
     private static final double PROP_DROP_RATE = 0.5;  // 50%概率掉落道具
+
+    private boolean isFrozen = false;
+    private int frozenRemaining = 0;  // 剩余冰冻帧数
 
     public QuickEnemy(int locationX, int locationY, int speedX, int speedY, int hp) {
         super(locationX, locationY, speedX, speedY, hp);
@@ -34,7 +38,15 @@ public class QuickEnemy extends AbstractAircraft {
 
     @Override
     public void forward() {
-        super.forward();
+        if (isFrozen) {
+            frozenRemaining--;
+            if (frozenRemaining <= 0) {
+                isFrozen = false;
+                speedY = 10;  // 恢复速度
+            }
+        } else {
+            super.forward();
+        }
         // 判定 y 轴向下飞行出界
         if (locationY >= Main.WINDOW_HEIGHT ) {
             vanish();
@@ -63,5 +75,20 @@ public class QuickEnemy extends AbstractAircraft {
         }
 
         return props;
+    }
+
+    @Override
+    public void onBombEffect() {
+        // 炸弹效果：坠毁
+        this.vanish();
+    }
+
+    @Override
+    public void onIceEffect() {
+        // 冰冻效果：静止4秒后恢复
+        this.isFrozen = true;
+        this.frozenRemaining = 133;
+        this.speedX = 0;
+        this.speedY = 0;
     }
 }

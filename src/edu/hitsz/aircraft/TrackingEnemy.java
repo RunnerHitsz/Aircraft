@@ -1,6 +1,7 @@
 // TrackingEnemy.java
 package edu.hitsz.aircraft;
 
+import edu.hitsz.observer.PropObserver;
 import edu.hitsz.strategypattern.TrackingShootStrategy;
 import edu.hitsz.application.Main;
 import edu.hitsz.bullet.BaseBullet;
@@ -15,10 +16,13 @@ import java.util.List;
  * 会追踪玩家位置，发射追踪子弹
  * @author hitsz
  */
-public class TrackingEnemy extends AbstractAircraft {
+public class TrackingEnemy extends AbstractAircraft implements PropObserver {
 
     // 道具掉落概率（50%）
     private static final double PROP_DROP_RATE = 0.5;
+
+    private int slowRemaining = 0;
+    private int originalSpeed = 4;
 
     // 追踪速度（水平移动速度）
     private int trackingSpeed = 10;
@@ -42,6 +46,15 @@ public class TrackingEnemy extends AbstractAircraft {
 
     @Override
     public void forward() {
+        if (slowRemaining > 0) {
+            slowRemaining--;
+            if (slowRemaining <= 0) {
+                // 恢复速度
+                this.speedX = this.speedX * 2;
+                this.speedY = this.speedY * 2;
+                System.out.println("王牌敌机减速结束，恢复速度");
+            }
+        }
         super.forward();
 
         // 水平追踪，保持向下移动
@@ -93,5 +106,19 @@ public class TrackingEnemy extends AbstractAircraft {
         }
 
         return props;
+    }
+
+    @Override
+    public void onBombEffect() {
+        // 炸弹效果：掉血
+        this.decreaseHp(30);
+    }
+
+    @Override
+    public void onIceEffect() {
+        // 冰冻效果：减速5秒
+        this.slowRemaining = 166;
+        this.speedX = this.speedX / 3;
+        this.speedY = this.speedY / 3;
     }
 }

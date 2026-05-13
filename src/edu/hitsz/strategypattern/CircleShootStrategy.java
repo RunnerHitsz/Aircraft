@@ -99,7 +99,6 @@ public class CircleShootStrategy implements Strategy {
             bullets.add(bullet);
         }
 
-        System.out.println("Boss 向下 180° 环射，发射 " + bulletCount + " 发子弹");
         return bullets;
     }
 }

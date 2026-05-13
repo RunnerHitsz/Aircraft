@@ -8,8 +8,14 @@ import edu.hitsz.factory.EnemyFactory;
 import edu.hitsz.factory.RandomEnemyFactory;
 import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.basic.AbstractFlyingObject;
+import edu.hitsz.manager.AudioManager;
+import edu.hitsz.manager.AudioPath;
 import edu.hitsz.manager.BossManager;
+import edu.hitsz.observer.PropObserver;
 import edu.hitsz.prop.AbstractProp;
+import edu.hitsz.prop.Bomb_prop;
+import edu.hitsz.prop.Ice_prop;
+import edu.hitsz.ui.RankingPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,13 +24,14 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 import java.util.Timer;
-import java.util.concurrent.*;
 
 /**
  * 游戏主面板，游戏启动
  * @author hitsz
  */
 public class Game extends JPanel {
+
+    private AudioManager audioManager;
 
     //玩家名字
     private String playerName;
@@ -65,8 +72,15 @@ public class Game extends JPanel {
     // 新增DAO 对象
     private ScoreDao scoreDao;
 
+    private Bomb_prop bombProp;  // 用于注册观察者
+    private Ice_prop iceProp;    // 用于注册观察者
+
     //游戏结束标志
     private boolean gameOverFlag = false;
+
+    public boolean isGameOver(){
+        return gameOverFlag;
+    }
 
     public Game(String playerName, Difficulty difficulty) {
 
@@ -98,12 +112,26 @@ public class Game extends JPanel {
 
         // 初始化Boss管理器
         bossManager = BossManager.getInstance();
+        bossManager.setDifficulty(difficulty);  // 设置难度
         bossManager.init(enemyAircrafts);
 
         //启动英雄机鼠标监听
         new HeroController(this, heroAircraft);
 
         this.timer = new Timer("game-action-timer", true);
+
+        // 初始化音频管理器
+        audioManager = AudioManager.getInstance();
+
+        // 启动游戏背景音乐（普通音乐）
+        audioManager.playBgm(AudioPath.BGM_GAME, true);
+
+        // 创建炸弹和冰冻道具（用于注册观察者，位置不重要）
+        bombProp = new Bomb_prop(-1, -1, 0, 0);
+        iceProp = new Ice_prop(-1, -1, 0, 0);
+        // 不需要将 bombProp/iceProp 加入 props 列表
+        // 它们只是用来通知观察者的，不是可拾取的道具
+
 
     }
 
@@ -152,6 +180,12 @@ public class Game extends JPanel {
                         EnemyFactory factory = RandomEnemyFactory.getRandomFactory();
                         AbstractAircraft newEnemy = factory.createEnemy();
                         enemyAircrafts.add(newEnemy);
+
+                        // 注册为炸弹和冰冻的观察者
+                        if (newEnemy instanceof PropObserver) {
+                            bombProp.attach((PropObserver) newEnemy);
+                            iceProp.attach((PropObserver) newEnemy);
+                        }
                     }
 
                 }
@@ -276,6 +310,9 @@ public class Game extends JPanel {
                             killCount++;
                         }
 
+                        // 播放击中音效
+                        audioManager.playSound(AudioPath.SOUND_HIT);
+
                         //只在死亡时调用 dropProp
                         List<AbstractProp> droppedProps = enemyAircraft.dropProp();
                         props.addAll(droppedProps);
@@ -295,8 +332,17 @@ public class Game extends JPanel {
                 continue;
             }
             if (heroAircraft.crash(prop)) {
+                // 使用注册过的 bombProp 和 iceProp 来通知（不是 props 里的实例）
+                if (prop instanceof Bomb_prop) {
+                    bombProp.notifyBombEffect();   // 使用注册过的 bombProp
+                } else if (prop instanceof Ice_prop) {
+                    iceProp.notifyIceEffect();     // 使用注册过的 iceProp
+                }
                 prop.effect(heroAircraft);  // 道具生效
                 prop.vanish();               // 道具消失
+
+                // 播放道具音效
+                audioManager.playSound(AudioPath.SOUND_PROP);
             }
         }
 
@@ -322,17 +368,22 @@ public class Game extends JPanel {
     private void checkResultAction(){
         // 游戏结束检查英雄机是否存活
         if (heroAircraft.getHp() <= 0) {
+
+            // 游戏结束
+            audioManager.playSound(AudioPath.SOUND_GAME_OVER);
+            audioManager.stopBgm();  // 停止背景音乐
+
             timer.cancel(); // 取消定时器并终止所有调度任务
             gameOverFlag = true;
 
-            // 保存游戏记录
             saveGameRecord();
+            showRankingWindow();
 
             System.out.println("Game Over!");
         }
     };
 
-    // 新增：保存游戏记录
+    // 保存游戏记录
     private void saveGameRecord() {
 
         if (playerName == null || playerName.trim().isEmpty()) {
@@ -352,36 +403,23 @@ public class Game extends JPanel {
         scoreDao.doAdd(record);
     }
 
-    // 新增：获取存活时间
+    // 获取存活时间
     private long getSurvivalTime() {
         return (System.currentTimeMillis() - startTime) / 1000;
     }
 
-    // 新增：显示排行榜
-    public void showRanking() {
-        System.out.println("\n========== 得分排行榜 ==========");
-        List<ScoreRecord> topScores = scoreDao.getTopN(10);
-        for (int i = 0; i < topScores.size(); i++) {
-            ScoreRecord record = topScores.get(i);
-            System.out.println((i + 1) + ". " + record.getPlayerName() +
-                    " - " + record.getScore() + "分" +
-                    " (" + record.getGameDate() + ")");
-        }
-        System.out.println("================================\n");
-    }
+    public void showRankingWindow() {
+        // 关闭游戏窗口
+        SwingUtilities.getWindowAncestor(this).dispose();
 
-    // 新增：显示玩家历史记录
-    public void showPlayerHistory() {
-        System.out.println("\n========== " + playerName + " 的历史记录 ==========");
-        List<ScoreRecord> history = scoreDao.findByPlayer(playerName);
-        for (int i = 0; i < history.size(); i++) {
-            ScoreRecord record = history.get(i);
-            System.out.println((i + 1) + ". 得分: " + record.getScore() +
-                    ", 击落: " + record.getKillCount() +
-                    ", 存活: " + record.getSurvivalTime() + "秒" +
-                    ", 时间: " + record.getGameDate());
-        }
-        System.out.println("==========================================\n");
+        // 打开排行榜窗口
+        JFrame frame = new JFrame("得分排行榜 - " + difficulty.getName());
+        RankingPanel panel = new RankingPanel(difficulty, playerName, score);
+        frame.setContentPane(panel.getMainPanel());
+        frame.setSize(500, 400);
+        frame.setLocationRelativeTo(null);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
     }
 
     //***********************
@@ -395,6 +433,7 @@ public class Game extends JPanel {
     public void paint(Graphics g) {
         super.paint(g);
 
+        /*
         // 按score绘制背景,图片滚动
         if (score < 200){
             g.drawImage(ImageManager.BACKGROUND_IMAGE1, 0, this.backGroundTop - Main.WINDOW_HEIGHT, null);
@@ -420,6 +459,16 @@ public class Game extends JPanel {
             g.drawImage(ImageManager.BACKGROUND_IMAGE5, 0, this.backGroundTop - Main.WINDOW_HEIGHT, null);
             g.drawImage(ImageManager.BACKGROUND_IMAGE5, 0, this.backGroundTop, null);
         }
+        */
+
+        setBackgroundImage(difficulty);
+
+        if(score >= 800){
+            ImageManager.CURRENT_BACKGROUND = ImageManager.BACKGROUND_IMAGE5;
+        }
+
+        g.drawImage(ImageManager.CURRENT_BACKGROUND, 0, this.backGroundTop - Main.WINDOW_HEIGHT, null);
+        g.drawImage(ImageManager.CURRENT_BACKGROUND, 0, this.backGroundTop, null);
 
         this.backGroundTop += 1;
         if (this.backGroundTop == Main.WINDOW_HEIGHT) {
@@ -441,6 +490,24 @@ public class Game extends JPanel {
         //绘制得分和生命值
         paintScoreAndLife(g);
 
+    }
+
+    //背景
+    private void setBackgroundImage(Difficulty difficulty) {
+        switch (difficulty) {
+            case EASY:
+                ImageManager.CURRENT_BACKGROUND = ImageManager.BACKGROUND_IMAGE1;
+                break;
+            case NORMAL:
+                ImageManager.CURRENT_BACKGROUND = ImageManager.BACKGROUND_IMAGE2;
+                break;
+            case HARD:
+                ImageManager.CURRENT_BACKGROUND = ImageManager.BACKGROUND_IMAGE3;
+                break;
+            default:
+                ImageManager.CURRENT_BACKGROUND = ImageManager.BACKGROUND_IMAGE1;
+                break;
+        }
     }
 
     private void paintImageWithPositionRevised(Graphics g, List<? extends AbstractFlyingObject> objects) {

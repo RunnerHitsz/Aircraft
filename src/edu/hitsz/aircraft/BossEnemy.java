@@ -1,5 +1,6 @@
 package edu.hitsz.aircraft;
 
+import edu.hitsz.observer.PropObserver;
 import edu.hitsz.strategypattern.CircleShootStrategy;
 import edu.hitsz.strategypattern.DirectShootStrategy;
 import edu.hitsz.strategypattern.ScatterShootStrategy;
@@ -19,7 +20,7 @@ import java.util.List;
  * @author chen
  */
 
-public class BossEnemy extends AbstractAircraft{
+public class BossEnemy extends AbstractAircraft implements PropObserver {
 
     // 道具掉落概率（0-1之间）
     private static final double PROP_DROP_RATE = 0.7;   // 70%掉落
@@ -29,12 +30,10 @@ public class BossEnemy extends AbstractAircraft{
         super(locationX, locationY, speedX, speedY, hp);
 
         this.ShootCycle = 40;
-        this.shootNum = 20;
         this.power = 10;
         this.direction = 1;
+        //子弹数量和生命值可以变化
 
-        // 初始使用环形射击
-        setShootStrategy(new CircleShootStrategy(false, this.shootNum, 6));
     }
 
     @Override
@@ -75,4 +74,13 @@ public class BossEnemy extends AbstractAircraft{
     }
 
 
+    @Override
+    public void onBombEffect() {
+        //不受影响
+    }
+
+    @Override
+    public void onIceEffect() {
+        //不受影响
+    }
 }

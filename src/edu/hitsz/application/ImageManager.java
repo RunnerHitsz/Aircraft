@@ -33,6 +33,8 @@ public class ImageManager {
     public static BufferedImage BACKGROUND_IMAGE4;
     public static BufferedImage BACKGROUND_IMAGE5;
 
+    public static BufferedImage CURRENT_BACKGROUND;
+
     //飞机图片
     public static BufferedImage HERO_IMAGE;
     public static BufferedImage HERO_BULLET_IMAGE;

@@ -1,5 +1,6 @@
 package edu.hitsz.aircraft;
 
+import edu.hitsz.observer.PropObserver;
 import edu.hitsz.strategypattern.ScatterShootStrategy;
 import edu.hitsz.application.Main;
 import edu.hitsz.bullet.BaseBullet;
@@ -16,10 +17,13 @@ import java.util.List;
  * @author chen
  */
 
-public class ShootingEnemy extends AbstractAircraft {
+public class ShootingEnemy extends AbstractAircraft implements PropObserver {
 
     // 道具掉落概率（0-1之间）
     private static final double PROP_DROP_RATE = 0.2;  // 20%概率掉落道具
+
+    private boolean isFrozen = false;
+    private int frozenRemaining = 0;
 
     public ShootingEnemy(int locationX, int locationY, int speedX, int speedY, int hp) {
         super(locationX, locationY, speedX, speedY, hp);
@@ -36,7 +40,16 @@ public class ShootingEnemy extends AbstractAircraft {
 
     @Override
     public void forward() {
-        super.forward();
+        if (isFrozen) {
+            frozenRemaining--;
+            if (frozenRemaining <= 0) {
+                isFrozen = false;
+                speedY = 5;
+                System.out.println("精锐敌机解冻，恢复移动");
+            }
+        } else {
+            super.forward();
+        }
         // 判定 y 轴向下飞行出界
         if (locationY >= Main.WINDOW_HEIGHT) {
             vanish();
@@ -68,4 +81,16 @@ public class ShootingEnemy extends AbstractAircraft {
         return props;
     }
 
+    @Override
+    public void onBombEffect() {
+        this.vanish();
+    }
+
+    @Override
+    public void onIceEffect() {
+        this.isFrozen = true;
+        this.frozenRemaining = 100;  // 静止3秒
+        this.speedX = 0;
+        this.speedY = 0;
+    }
 }

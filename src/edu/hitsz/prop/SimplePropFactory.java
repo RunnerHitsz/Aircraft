@@ -37,10 +37,10 @@ public class SimplePropFactory {
     //产生四个道具
     public static AbstractProp createRandom4Prop(int x, int y) {
         // 道具类型数组
-        String[] types = {"Blood_prop", "Fire_prop", "SuperFire_prop", "Bomb_prop"};
+        String[] types = {"Blood_prop", "Fire_prop", "SuperFire_prop", "Ice_prop"};
 
         // 权重数组（概率权重，总和不必为1，越大概率越高）
-        int[] weights = {40, 30, 20, 10};  // 血40%，火30%，超火20%，炸弹10%
+        int[] weights = {40, 30, 20, 1000};  // 血40%，火30%，超火20%，炸弹10%
 
         // 计算总权重
         int totalWeight = 0;

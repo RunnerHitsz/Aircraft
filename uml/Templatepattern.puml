@@ -1,0 +1,52 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+abstract class AbstractGame {
+    # enemyMaxNumber: int
+    # enemySpawnCycle: double
+    # heroHp: int
+    + {final} action(): void
+    + {abstract} initGame(): void
+    + {abstract} adjustDifficulty(): void
+    + {abstract} getEnemyMaxNumber(): int
+    + {abstract} getEnemySpawnCycle(): double
+    + {abstract} getHeroHp(): int
+    + {abstract} isBossEnabled(): boolean
+    ~ hook() : void
+}
+
+class EasyGame {
+    + initGame(): void
+    + adjustDifficulty(): void
+    + getEnemyMaxNumber(): int
+    + getEnemySpawnCycle(): double
+    + getHeroHp(): int
+    + isBossEnabled(): boolean
+}
+
+class NormalGame {
+    - frameCount: int
+    + initGame(): void
+    + adjustDifficulty(): void
+    + getEnemyMaxNumber(): int
+    + getEnemySpawnCycle(): double
+    + getHeroHp(): int
+    + isBossEnabled(): boolean
+}
+
+class HardGame {
+    - frameCount: int
+    + initGame(): void
+    + adjustDifficulty(): void
+    + getEnemyMaxNumber(): int
+    + getEnemySpawnCycle(): double
+    + getHeroHp(): int
+    + isBossEnabled(): boolean
+}
+
+AbstractGame <|-- EasyGame
+AbstractGame <|-- NormalGame
+AbstractGame <|-- HardGame
+
+
+@enduml
