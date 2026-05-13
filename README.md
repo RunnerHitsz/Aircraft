@@ -62,23 +62,23 @@
 | DAO 模式 | 得分记录持久化存储 |
 
 ### 项目结构
-AircraftWar/
-├── src/edu/hitsz/
-│ ├── application/ # 游戏主类（Game, Main）
-│ ├── aircraft/ # 飞机类（英雄机、各类敌机）
-│ ├── bullet/ # 子弹类
-│ ├── prop/ # 道具类
-│ ├── factory/ # 敌机工厂（工厂方法模式）
-│ ├── strategypattern/ # 射击策略（策略模式）
-│ ├── observer/ # 观察者模式（道具通知）
-│ ├── template/ # 模板模式（游戏难度）
-│ ├── DAO/ # 数据访问对象模式
-│ ├── manager/ # 管理器（音频、Boss）
-│ └── ui/ # Swing 界面（难度选择、排行榜）
-├── images/ # 游戏图片资源
-├── audios/ # 音效文件（WAV）
-├── scores/ # 得分数据（JSON）
-└── uml/ # UML 类图（PlantUML）
+- `AircraftWar/`
+  - `src/edu/hitsz/`
+    - `application/` - 游戏主类（Game, Main）
+    - `aircraft/` - 飞机类（英雄机、各类敌机）
+    - `bullet/` - 子弹类
+    - `prop/` - 道具类
+    - `factory/` - 敌机工厂（工厂方法模式）
+    - `strategypattern/` - 射击策略（策略模式）
+    - `observer/` - 观察者模式（道具通知）
+    - `template/` - 模板模式（游戏难度）
+    - `DAO/` - 数据访问对象模式
+    - `manager/` - 管理器（音频、Boss）
+    - `ui/` - Swing 界面（难度选择、排行榜）
+  - `images/` - 游戏图片资源
+  - `audios/` - 音效文件（WAV）
+  - `scores/` - 得分数据（JSON）
+  - `uml/` - UML 类图（PlantUML）
 
 ## 🚀 运行说明
 
@@ -88,7 +88,7 @@ AircraftWar/
 
 ### 运行步骤
 1. 克隆仓库到本地
-   bash：
+   ```bash
    git clone https://github.com/RunnerHitsz/AircraftWar.git
 2. 使用 IntelliJ IDEA 打开项目
 3. 配置 SDK：File → Project Structure → SDK → 选择 JDK 25
